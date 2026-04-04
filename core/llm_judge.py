@@ -11,7 +11,7 @@ from core.config import config
 from core.evaluator import compute_panic_score
 from core.execution import ExecutionContext, execute_with_cache
 from core.llm_cache import build_cache_key
-from core.llm_utils import run_with_rate_limit
+from core.llm_utils import completion_token_limit_kwargs, run_with_rate_limit
 from core.models import BranchTrace
 
 _JUDGE_PROMPT = """\
@@ -228,7 +228,11 @@ async def llm_judge_score_many(
                 ],
                 response_format={"type": "json_object"},
                 temperature=0.1,
-                max_tokens=max(256, 160 * len(trace_list)),
+                **completion_token_limit_kwargs(
+                    max(256, 160 * len(trace_list)),
+                    base_url=execution_context.base_url,
+                    model=execution_context.generator_model,
+                ),
             ),
             parser=parser,
         )

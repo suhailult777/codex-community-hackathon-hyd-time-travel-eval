@@ -83,6 +83,27 @@ def test_is_rate_limited_error_handles_provider_specific_messages():
     )
 
 
+def test_completion_token_limit_kwargs_uses_openai_safe_parameter_for_gpt5():
+    assert llm_utils.completion_token_limit_kwargs(
+        128,
+        base_url="https://api.openai.com/v1",
+        model="gpt-5.4-nano",
+    ) == {"max_completion_tokens": 128}
+
+    # GPT-5 model naming should still force compatibility even on custom gateways.
+    assert llm_utils.completion_token_limit_kwargs(
+        64,
+        base_url="https://custom.gateway/v1",
+        model="gpt-5-mini",
+    ) == {"max_completion_tokens": 64}
+
+    assert llm_utils.completion_token_limit_kwargs(
+        96,
+        base_url="https://integrate.api.nvidia.com/v1",
+        model="meta/llama-3.1-70b-instruct",
+    ) == {"max_tokens": 96}
+
+
 @pytest.mark.asyncio
 async def test_run_with_rate_limit_retries_and_defers_global_queue(monkeypatch):
     waits: list[int] = []
@@ -186,6 +207,31 @@ async def test_agent_runner_parses_json_action_payload(monkeypatch):
     assert action.tool_name == "restart_service"
     assert action.tool_args == {}
     assert runner.total_tokens == 13
+
+
+@pytest.mark.asyncio
+async def test_agent_runner_uses_max_completion_tokens_for_gpt5(monkeypatch):
+    captured_kwargs: dict[str, Any] = {}
+
+    class FakeClient:
+        def __init__(self):
+            self.chat = SimpleNamespace(completions=SimpleNamespace(create=self.create))
+
+        async def create(self, **kwargs):
+            captured_kwargs.update(kwargs)
+            return FakeCompletionResponse(tool_name="check_logs")
+
+    fake_client = FakeClient()
+
+    monkeypatch.setattr(agent_runner, "AsyncOpenAI", lambda **kwargs: fake_client)
+
+    runner = agent_runner.AgentRunner(model="gpt-5.4-nano", max_steps=3)
+    action = await runner.step("server=degraded")
+
+    assert action.tool_name == "check_logs"
+    assert "max_completion_tokens" in captured_kwargs
+    assert captured_kwargs["max_completion_tokens"] == 128
+    assert "max_tokens" not in captured_kwargs
 
 
 @pytest.mark.asyncio

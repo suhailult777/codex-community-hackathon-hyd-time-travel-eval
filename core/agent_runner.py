@@ -11,7 +11,7 @@ from openai import AsyncOpenAI
 from core.config import config
 from core.execution import ExecutionContext, execute_with_cache
 from core.llm_cache import build_cache_key
-from core.llm_utils import run_with_rate_limit
+from core.llm_utils import completion_token_limit_kwargs, run_with_rate_limit
 from core.models import AgentAction
 
 DEVOPS_TOOLS: List[Dict[str, Any]] = [
@@ -233,7 +233,11 @@ class AgentRunner:
                     messages=[*self.conversation, user_message],
                     response_format={"type": "json_object"},
                     temperature=0.0,
-                    max_tokens=128,
+                    **completion_token_limit_kwargs(
+                        128,
+                        base_url=self.base_url,
+                        model=self.model,
+                    ),
                 )
             )
             usage_total_tokens = response.usage.total_tokens if response.usage else 0
@@ -265,7 +269,11 @@ class AgentRunner:
                 messages=[*self.conversation, user_message],
                 response_format={"type": "json_object"},
                 temperature=0.0,
-                max_tokens=128,
+                **completion_token_limit_kwargs(
+                    128,
+                    base_url=self.base_url,
+                    model=self.model,
+                ),
             ),
             parser=parser,
         )
@@ -400,7 +408,11 @@ async def run_batched_step(
             ],
             response_format={"type": "json_object"},
             temperature=0.0,
-            max_tokens=max(256, 96 * len(branch_items)),
+            **completion_token_limit_kwargs(
+                max(256, 96 * len(branch_items)),
+                base_url=execution_context.base_url,
+                model=execution_context.agent_model,
+            ),
         ),
         parser=parser,
     )

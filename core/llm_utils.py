@@ -133,6 +133,27 @@ def is_rate_limited_error(err: Exception) -> bool:
     return re.search(r"\b\d+(?:\.\d+)?\s*rpm\b", message) is not None
 
 
+def completion_token_limit_kwargs(
+    max_tokens: int,
+    *,
+    base_url: str | None = None,
+    model: str | None = None,
+) -> dict[str, int]:
+    """Return provider-compatible token limit kwargs for chat completions.
+
+    OpenAI GPT-5 family models reject `max_tokens` and require
+    `max_completion_tokens`.
+    """
+    normalized_base_url = (base_url or "").strip().lower()
+    normalized_model = (model or "").strip().lower()
+    token_cap = max(1, int(max_tokens))
+
+    if "api.openai.com" in normalized_base_url or normalized_model.startswith("gpt-5"):
+        return {"max_completion_tokens": token_cap}
+
+    return {"max_tokens": token_cap}
+
+
 async def run_with_rate_limit(
     request_factory: Callable[[], Awaitable[Any]],
     *,
