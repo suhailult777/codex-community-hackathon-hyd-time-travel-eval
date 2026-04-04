@@ -1,0 +1,31 @@
+/* TTE Streamlit custom styles */
+
+/* Dark mode friendly palette */
+.stApp {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* Metric cards */
+[data-testid="stMetricValue"] {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+}
+
+[data-testid="stMetricDelta"] {
+    font-size: 0.85rem !important;
+}
+
+/* Expander headers */
+.streamlit-expanderHeader {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #0f172a;
+}
+
+section[data-testid="stSidebar"] .stMarkdown {
+    color: #e2e8f0;
+}

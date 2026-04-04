@@ -1,0 +1,65 @@
+[
+  {
+    "id": "devops_deploy_v2",
+    "task": "Deploy version 2 of the frontend application to production",
+    "domain": "devops",
+    "default_state": {
+      "server_status": "healthy",
+      "cpu_utilization": 35,
+      "memory_utilization": 42,
+      "deployment_status": "pending",
+      "tests_passing": true,
+      "dependency_api_status": "healthy",
+      "latency_ms": 120,
+      "error_rate": 0.01,
+      "rollback_available": true,
+      "logs": []
+    },
+    "success_criteria": {
+      "deployment_status": "deployed",
+      "server_status": ["healthy", "degraded"]
+    }
+  },
+  {
+    "id": "devops_fix_outage",
+    "task": "Investigate and resolve a production outage affecting the payment service",
+    "domain": "devops",
+    "default_state": {
+      "server_status": "down",
+      "cpu_utilization": 98,
+      "memory_utilization": 91,
+      "deployment_status": "deployed",
+      "tests_passing": false,
+      "dependency_api_status": "down",
+      "latency_ms": 5000,
+      "error_rate": 0.85,
+      "rollback_available": true,
+      "logs": []
+    },
+    "success_criteria": {
+      "server_status": "healthy",
+      "error_rate_below": 0.05
+    }
+  },
+  {
+    "id": "devops_rollback",
+    "task": "A bad deployment broke the site. Rollback and stabilize the system.",
+    "domain": "devops",
+    "default_state": {
+      "server_status": "degraded",
+      "cpu_utilization": 75,
+      "memory_utilization": 68,
+      "deployment_status": "deployed",
+      "tests_passing": false,
+      "dependency_api_status": "healthy",
+      "latency_ms": 800,
+      "error_rate": 0.40,
+      "rollback_available": true,
+      "logs": []
+    },
+    "success_criteria": {
+      "deployment_status": "rolled_back",
+      "server_status": "healthy"
+    }
+  }
+]

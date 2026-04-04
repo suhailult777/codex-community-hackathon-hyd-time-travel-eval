@@ -1,0 +1,243 @@
+{
+  "base_task": "Deploy version 2 of the frontend application to production",
+  "branches": [
+    {
+      "branch": {
+        "id": "branch_0",
+        "label": "Happy Path (Baseline)",
+        "description": "Baseline scenario: Deploy version 2 of the frontend application to production under ideal conditions with no perturbations.",
+        "is_baseline": true,
+        "events": [],
+        "initial_state_overrides": {},
+        "expected_outcome": null
+      },
+      "steps": [
+        {
+          "step_number": 0,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "logs": []
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 0.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=✓ | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "check_logs",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": "ChatCompletionMessage(content='{\"tool_name\": \"check_logs\", \"tool_args\": {}}', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None, reasoning_content=None)"
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "logs": [
+              "[step 1] Agent: check_logs({}) → Recent logs:\n  • No log entries yet."
+            ]
+          }
+        },
+        {
+          "step_number": 1,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "logs": [
+              "[step 1] Agent: check_logs({}) → Recent logs:\n  • No log entries yet."
+            ]
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 1.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=✓ | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "deploy",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": "ChatCompletionMessage(content='{\"tool_name\": \"deploy\", \"tool_args\": {}}', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None, reasoning_content=None)"
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "logs": [
+              "[step 1] Agent: check_logs({}) → Recent logs:\n  • No log entries yet.",
+              "[step 2] Agent: deploy({}) → Deployment SUCCEEDED ✓ — code is live in production."
+            ]
+          }
+        }
+      ],
+      "final_state": {
+        "server_status": "healthy",
+        "cpu_utilization": 35,
+        "memory_utilization": 42,
+        "deployment_status": "deployed",
+        "tests_passing": true,
+        "dependency_api_status": "healthy",
+        "latency_ms": 120,
+        "error_rate": 0.01,
+        "rollback_available": true,
+        "logs": [
+          "[step 1] Agent: check_logs({}) → Recent logs:\n  • No log entries yet.",
+          "[step 2] Agent: deploy({}) → Deployment SUCCEEDED ✓ — code is live in production."
+        ]
+      },
+      "success": true,
+      "score": 0.9750000000000001,
+      "deviation_step": null,
+      "recovery_step": null,
+      "api_calls_used": 2,
+      "total_tokens_used": 609
+    },
+    {
+      "branch": {
+        "id": "branch_1",
+        "label": "CPU Spike",
+        "description": "A sudden CPU spike to 95% at step 2 threatens the deployment.",
+        "is_baseline": false,
+        "events": [
+          {
+            "step": 2,
+            "name": "cpu_spike",
+            "description": "CPU utilization surges to 95% due to a runaway process.",
+            "effect_deltas": {
+              "cpu_utilization": 95,
+              "server_status": "degraded"
+            }
+          }
+        ],
+        "initial_state_overrides": {},
+        "expected_outcome": null
+      },
+      "steps": [
+        {
+          "step_number": 0,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "logs": []
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 0.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=✓ | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "check_logs",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": "ChatCompletionMessage(content='{\"tool_name\": \"check_logs\", \"tool_args\": {}}', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None, reasoning_content=None)"
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "logs": [
+              "[step 1] Agent: check_logs({}) → Recent logs:\n  • No log entries yet."
+            ]
+          }
+        },
+        {
+          "step_number": 1,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "logs": [
+              "[step 1] Agent: check_logs({}) → Recent logs:\n  • No log entries yet."
+            ]
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 1.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=✓ | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "deploy",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": "ChatCompletionMessage(content='{\"tool_name\": \"deploy\", \"tool_args\": {}}', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None, reasoning_content=None)"
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "logs": [
+              "[step 1] Agent: check_logs({}) → Recent logs:\n  • No log entries yet.",
+              "[step 2] Agent: deploy({}) → Deployment SUCCEEDED ✓ — code is live in production."
+            ]
+          }
+        }
+      ],
+      "final_state": {
+        "server_status": "healthy",
+        "cpu_utilization": 35,
+        "memory_utilization": 42,
+        "deployment_status": "deployed",
+        "tests_passing": true,
+        "dependency_api_status": "healthy",
+        "latency_ms": 120,
+        "error_rate": 0.01,
+        "rollback_available": true,
+        "logs": [
+          "[step 1] Agent: check_logs({}) → Recent logs:\n  • No log entries yet.",
+          "[step 2] Agent: deploy({}) → Deployment SUCCEEDED ✓ — code is live in production."
+        ]
+      },
+      "success": true,
+      "score": 0.9750000000000001,
+      "deviation_step": null,
+      "recovery_step": null,
+      "api_calls_used": 2,
+      "total_tokens_used": 609
+    }
+  ],
+  "robustness_score": 1.0,
+  "success_rate": 1.0,
+  "stability_score": 1.0,
+  "mean_recovery_time": null,
+  "total_api_calls": 4,
+  "total_tokens": 1218
+}
