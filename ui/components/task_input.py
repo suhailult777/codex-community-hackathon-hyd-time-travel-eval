@@ -8,47 +8,9 @@ from typing import Any, Dict, List, Tuple
 
 import streamlit as st
 
+from core.runtime_budget import estimate_runtime, format_duration, recommend_live_profile
+
 DATA_DIR = Path(__file__).parent.parent.parent / "data"
-
-
-def _estimate_total_api_calls(
-    *,
-    n_branches: int,
-    max_steps: int,
-    use_llm: bool,
-    use_llm_agent: bool,
-) -> int:
-    calls = 0
-    if use_llm:
-        calls += 1
-    if use_llm_agent:
-        calls += n_branches * max_steps
-    return calls
-
-
-def _estimate_min_runtime_seconds(total_api_calls: int, rpm: int) -> int:
-    if total_api_calls <= 0:
-        return 0
-    return max(1, int(round((total_api_calls * 60.0) / max(1, rpm))))
-
-
-def _recommend_live_profile(rpm: int) -> tuple[int, int]:
-    if rpm >= 40:
-        return 3, 6
-    if rpm >= 25:
-        return 3, 5
-    if rpm >= 15:
-        return 2, 5
-    return 2, 4
-
-
-def _format_duration(seconds: int) -> str:
-    if seconds < 60:
-        return f"{seconds}s"
-    minutes, rem = divmod(seconds, 60)
-    if rem == 0:
-        return f"{minutes}m"
-    return f"{minutes}m {rem}s"
 
 
 @st.cache_data(show_spinner=False)
@@ -59,11 +21,14 @@ def load_presets() -> List[Dict[str, Any]]:
     return []
 
 
-def render_task_input(rpm_budget: int) -> Tuple[str, Dict[str, Any] | None, int, int, bool, bool]:
+def render_task_input(
+    rpm_budget: int,
+    llm_judge_enabled: bool = False,
+) -> Tuple[str, Dict[str, Any] | None, int, int, bool, bool]:
     """Render the sidebar controls and return the current run configuration."""
     presets = load_presets()
     preset_names = ["Custom"] + [preset["task"][:60] for preset in presets]
-    default_branches, default_steps = _recommend_live_profile(rpm_budget)
+    default_branches, default_steps = recommend_live_profile(rpm_budget)
 
     st.sidebar.header("Configuration")
     st.sidebar.caption(f"Configured provider budget: up to {rpm_budget} requests per minute")
@@ -88,24 +53,27 @@ def render_task_input(rpm_budget: int) -> Tuple[str, Dict[str, Any] | None, int,
         env_state = preset.get("default_state")
         st.sidebar.info(f"Using preset: {preset['id']}")
 
-    n_branches = st.sidebar.slider("Number of branches", 2, 6, default_branches)
+    n_branches = st.sidebar.slider("Number of branches", 2, 7, default_branches)
     max_steps = st.sidebar.slider("Max steps per branch", 3, 12, default_steps)
 
     use_llm = not demo_mode
-    estimated_calls = _estimate_total_api_calls(
+    runtime = estimate_runtime(
         n_branches=n_branches,
         max_steps=max_steps,
         use_llm=use_llm,
         use_llm_agent=use_llm,
+        use_llm_judge=use_llm and llm_judge_enabled,
+        rpm=rpm_budget,
     )
-    estimated_seconds = _estimate_min_runtime_seconds(estimated_calls, rpm_budget)
 
     if use_llm:
-        st.sidebar.caption(f"Estimated provider calls: {estimated_calls}")
+        st.sidebar.caption(f"Estimated provider calls: {runtime.total_api_calls}")
         st.sidebar.caption(
-            f"Minimum time at {rpm_budget} rpm: about {_format_duration(estimated_seconds)}"
+            f"Minimum time at {rpm_budget} rpm: about {format_duration(runtime.estimated_min_seconds)}"
         )
-        if estimated_calls > rpm_budget:
+        if llm_judge_enabled:
+            st.sidebar.caption("LLM judge is enabled and adds one extra call per branch.")
+        if runtime.total_api_calls > rpm_budget:
             st.sidebar.warning("This setup is likely to take more than a minute at the current RPM budget.")
     else:
         st.sidebar.success("Demo mode uses zero provider calls.")

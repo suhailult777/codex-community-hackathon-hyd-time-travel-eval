@@ -45,22 +45,29 @@ st.markdown(
 
 st.caption(
     f"Configured budget: {config.MAX_REQUESTS_PER_MINUTE} rpm | "
-    f"Request timeout: {getattr(config, 'LLM_REQUEST_TIMEOUT_SECONDS', 20.0):.0f}s"
+    f"Request timeout: {getattr(config, 'LLM_REQUEST_TIMEOUT_SECONDS', 20.0):.0f}s | "
+    f"LLM judge: {'on' if config.ENABLE_LLM_JUDGE else 'off'}"
 )
 
-with st.expander("🔬 Core Research: Why Multiverse Evals?"):
-    st.markdown("""
-    **1. The Trajectory Illusion:** Traditional benchmarks evaluate agents on a single 'happy path'. This creates a false sense of security, as agents memorize the path but fail catastrophically at the first unexpected anomaly.
+with st.expander("Core Research: Why Multiverse Evals?"):
+    st.markdown(
+        """
+        **1. The Trajectory Illusion:** Traditional benchmarks evaluate agents on a single happy path.
+        This creates a false sense of security, because agents can memorize a path yet fail at the first anomaly.
 
-    **2. Compounding Errors:** In autonomous systems, one unhandled error (e.g., a delayed API) snowballs into an unrecoverable state. Resilience can only be proven by actively perturbing the environment and measuring recovery.
+        **2. Compounding Errors:** In autonomous systems, one unhandled error can snowball into an unrecoverable state.
+        Resilience is only proven by perturbing the environment and measuring recovery.
 
-    **3. State-Space Branching:** Time-Travel Evals (TTE) computationally forks the environment into multiple alternative realities (*what-if scenarios*), replacing binary pass/fail rates with a mathematical **Robustness Score (RS)**.
-    """)
+        **3. State-Space Branching:** Time-Travel Evals forks the environment into multiple alternative realities,
+        replacing binary pass/fail rates with richer robustness metrics.
+        """
+    )
 
 st.markdown("---")
 
 task, env_state, n_branches, max_steps, use_llm, run_clicked = render_task_input(
-    config.MAX_REQUESTS_PER_MINUTE
+    config.MAX_REQUESTS_PER_MINUTE,
+    config.ENABLE_LLM_JUDGE,
 )
 
 if run_clicked:
@@ -118,6 +125,6 @@ else:
         1. Enter a task for the agent.
         2. Generate multiple alternate branches.
         3. Run the agent across those branches.
-        4. Compare robustness, success rate, and stability in one view.
+        4. Compare robustness, success rate, stability, and panic in one view.
         """
     )

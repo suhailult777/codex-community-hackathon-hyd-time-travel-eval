@@ -7,11 +7,19 @@ import streamlit as st
 from core.models import EvalResult
 
 
+def _panic_label(panic_score: float) -> str:
+    if panic_score < 0.20:
+        return "Calm under stress"
+    if panic_score < 0.50:
+        return "Some flailing"
+    return "High panic"
+
+
 def render_metrics_panel(result: EvalResult) -> None:
     """Render the high-level metrics row."""
-    c1, c2, c3, c4 = st.columns(4)
+    col1, col2, col3, col4 = st.columns(4)
 
-    with c1:
+    with col1:
         st.metric(
             label="Robustness Score",
             value=f"{result.robustness_score:.2f}",
@@ -19,15 +27,16 @@ def render_metrics_panel(result: EvalResult) -> None:
             delta_color="inverse" if result.robustness_score < 1.0 else "off",
         )
 
-    with c2:
+    with col2:
+        succeeded = len([branch for branch in result.branches if branch.success])
         st.metric(
             label="Success Rate",
             value=f"{result.success_rate:.0%}",
-            delta=f"{len([branch for branch in result.branches if branch.success])}/{len(result.branches)} branches",
+            delta=f"{succeeded}/{len(result.branches)} branches",
             delta_color="off",
         )
 
-    with c3:
+    with col3:
         st.metric(
             label="Stability Score",
             value=f"{result.stability_score:.2f}",
@@ -35,11 +44,15 @@ def render_metrics_panel(result: EvalResult) -> None:
             delta_color="off",
         )
 
-    with c4:
-        recovery_text = f"{result.mean_recovery_time:.1f} steps" if result.mean_recovery_time else "N/A"
+    with col4:
+        recovery_suffix = (
+            f"Recovery {result.mean_recovery_time:.1f} steps"
+            if result.mean_recovery_time is not None
+            else "Recovery N/A"
+        )
         st.metric(
-            label="Average Recovery",
-            value=recovery_text,
-            delta=f"{result.total_tokens:,} tokens",
-            delta_color="off",
+            label="Panic Score",
+            value=f"{result.mean_panic_score:.2f}",
+            delta=f"{_panic_label(result.mean_panic_score)} | {recovery_suffix}",
+            delta_color="inverse" if result.mean_panic_score >= 0.5 else "off",
         )
