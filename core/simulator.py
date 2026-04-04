@@ -90,6 +90,22 @@ class WorldSimulator:
     def is_terminal(self) -> bool:
         return self._terminal
 
+    def snapshot(self) -> Dict[str, Any]:
+        """Capture a restorable simulator snapshot."""
+        return {
+            "state": copy.deepcopy(self.state),
+            "current_step": self.current_step,
+            "last_event": self.last_event.model_copy(deep=True) if self.last_event else None,
+            "terminal": self._terminal,
+        }
+
+    def restore(self, snapshot: Dict[str, Any]) -> None:
+        """Restore the simulator to a previously captured snapshot."""
+        self.state = copy.deepcopy(snapshot["state"])
+        self.current_step = int(snapshot["current_step"])
+        self.last_event = snapshot["last_event"].model_copy(deep=True) if snapshot.get("last_event") else None
+        self._terminal = bool(snapshot["terminal"])
+
     def _summarise_state(self) -> str:
         state = self.state
         parts = [

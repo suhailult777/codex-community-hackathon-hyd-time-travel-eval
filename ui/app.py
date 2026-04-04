@@ -44,9 +44,11 @@ st.markdown(
 )
 
 st.caption(
+    f"Default provider: {config.provider_label(config.PROVIDER)} | "
     f"Configured budget: {config.MAX_REQUESTS_PER_MINUTE} rpm | "
     f"Request timeout: {getattr(config, 'LLM_REQUEST_TIMEOUT_SECONDS', 20.0):.0f}s | "
-    f"LLM judge: {'on' if config.ENABLE_LLM_JUDGE else 'off'}"
+    f"LLM judge: {'on' if config.ENABLE_LLM_JUDGE else 'off'} | "
+    f"Profile: {config.PROVIDER_PROFILE} | Mode: {config.EXECUTION_MODE}"
 )
 
 with st.expander("Core Research: Why Multiverse Evals?"):
@@ -65,18 +67,29 @@ with st.expander("Core Research: Why Multiverse Evals?"):
 
 st.markdown("---")
 
-task, env_state, n_branches, max_steps, use_llm, run_clicked = render_task_input(
-    config.MAX_REQUESTS_PER_MINUTE,
-    config.ENABLE_LLM_JUDGE,
+task, env_state, n_branches, max_steps, use_llm, run_clicked, selected_provider = render_task_input(
+    rpm_budget=config.MAX_REQUESTS_PER_MINUTE,
+    default_provider=config.PROVIDER,
+    llm_judge_enabled=config.ENABLE_LLM_JUDGE,
+    execution_mode=config.EXECUTION_MODE,
+    provider_profile=config.PROVIDER_PROFILE,
+    rate_limit_safety_factor=config.RATE_LIMIT_SAFETY_FACTOR,
 )
 
 if run_clicked:
-    if use_llm and not config.validate():
-        st.error("`NVIDIA_API_KEY` is not set. Enable Demo Mode or set the key in `.env`.")
+    selected_settings = config.get_provider_settings(selected_provider)
+    if use_llm and not config.validate(selected_provider):
+        st.error(
+            f"`{selected_settings.api_key_env_var}` is not set for {selected_settings.label}. "
+            "Enable Demo Mode or set the key in `.env`."
+        )
         st.stop()
 
     with st.status("Running Time-Travel Evaluation...", expanded=True) as status:
-        status.write("Generating branches and executing the selected profile...")
+        status.write(
+            f"Generating branches and executing with {selected_settings.label} "
+            f"({selected_settings.agent_model})..."
+        )
         result: EvalResult = asyncio.run(
             run_tte(
                 task=task,
@@ -85,6 +98,7 @@ if run_clicked:
                 max_steps=max_steps,
                 use_llm=use_llm,
                 use_llm_agent=use_llm,
+                provider=selected_provider,
             )
         )
         status.update(label="Evaluation complete", state="complete", expanded=False)
@@ -95,8 +109,16 @@ if "tte_result" in st.session_state:
     result = st.session_state["tte_result"]
 
     render_metrics_panel(result)
+    st.caption(
+        f"{config.provider_label(result.provider_name or config.PROVIDER)} | "
+        f"{result.agent_model} | "
+        f"{result.execution_mode.title()} mode on {result.provider_profile} profile | "
+        f"Effective RPM {result.effective_rpm} | "
+        f"Logical calls {result.logical_calls} | Scheduled provider calls {result.scheduled_provider_calls} | "
+        f"Cache {result.cache_hits} hits / {result.cache_misses} misses"
+    )
     st.markdown("---")
-    st.markdown("### Branch Timeline")
+    st.markdown("### Interactive Multiverse DAG")
     render_tree_view(result)
     render_trace_viewer(result)
 
@@ -113,7 +135,8 @@ if "tte_result" in st.session_state:
     with col_info:
         st.caption(
             f"Evaluated {len(result.branches)} branches | "
-            f"{result.total_api_calls} API calls | "
+            f"{result.total_api_calls} logical API calls | "
+            f"{result.scheduled_provider_calls} scheduled provider calls | "
             f"{result.total_tokens:,} tokens"
         )
 else:

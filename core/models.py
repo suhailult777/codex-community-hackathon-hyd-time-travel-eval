@@ -98,5 +98,16 @@ class EvalResult(BaseModel):
     stability_score: float = Field(default=0.0, ge=0.0, le=1.0)
     mean_recovery_time: Optional[float] = None
     mean_panic_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    provider_name: str = ""
+    provider_profile: str = "generic"
+    execution_mode: str = "standard"
+    effective_rpm: int = 0
+    logical_calls: int = 0
+    scheduled_provider_calls: int = 0
+    cache_hits: int = 0
+    cache_misses: int = 0
+    provider_base_url: str = ""
+    agent_model: str = ""
+    generator_model: str = ""
     total_api_calls: int = 0
     total_tokens: int = 0

@@ -8,6 +8,8 @@ from typing import Any, Dict, List
 from openai import AsyncOpenAI
 
 from core.config import config
+from core.execution import ExecutionContext, execute_with_cache
+from core.llm_cache import build_cache_key
 from core.llm_utils import run_with_rate_limit
 from core.models import Event, ScenarioBranch
 
@@ -59,36 +61,71 @@ async def generate_branches_llm(
     task: str,
     env_schema: Dict[str, Any],
     n_branches: int | None = None,
+    execution_context: ExecutionContext | None = None,
 ) -> List[ScenarioBranch]:
     """Use the configured LLM to generate creative scenario branches."""
     n = n_branches or config.MAX_BRANCHES
+    provider_settings = (
+        config.get_provider_settings(execution_context.provider_name)
+        if execution_context is not None
+        else config.get_provider_settings()
+    )
     client = AsyncOpenAI(
-        api_key=config.API_KEY,
-        base_url=config.API_BASE_URL,
+        api_key=provider_settings.api_key,
+        base_url=provider_settings.base_url,
         timeout=getattr(config, "LLM_REQUEST_TIMEOUT_SECONDS", 20.0),
     )
 
-    response = await run_with_rate_limit(
-        lambda: client.chat.completions.create(
-            model=config.MODEL_GENERATOR,
-            messages=[
-                {"role": "system", "content": _SYSTEM_PROMPT.format(n=n, max_step=config.MAX_STEPS - 1)},
-                {
-                    "role": "user",
-                    "content": _USER_PROMPT.format(
-                        task=task,
-                        schema_json=json.dumps(env_schema, indent=2),
-                        n=n,
-                    ),
-                },
-            ],
-            response_format={"type": "json_object"},
-            temperature=0.8,
-        )
-    )
+    messages = [
+        {"role": "system", "content": _SYSTEM_PROMPT.format(n=n, max_step=config.MAX_STEPS - 1)},
+        {
+            "role": "user",
+            "content": _USER_PROMPT.format(
+                task=task,
+                schema_json=json.dumps(env_schema, indent=2),
+                n=n,
+            ),
+        },
+    ]
 
-    raw = response.choices[0].message.content or "{}"
-    data = json.loads(raw)
+    if execution_context is None:
+        response = await run_with_rate_limit(
+            lambda: client.chat.completions.create(
+                model=provider_settings.generator_model,
+                messages=messages,
+                response_format={"type": "json_object"},
+                temperature=0.8,
+            )
+        )
+        raw = response.choices[0].message.content or "{}"
+        data = json.loads(raw)
+    else:
+        cache_key = build_cache_key(
+            base_url=provider_settings.base_url,
+            model=provider_settings.generator_model,
+            provider_profile=execution_context.generator_capabilities.provider_profile,
+            execution_mode=execution_context.execution_mode,
+            prompt_version=f"{execution_context.prompt_version}:scenario_generation",
+            purpose="scenario.generate",
+            payload={"task": task, "env_schema": env_schema, "n_branches": n},
+        )
+
+        def parser(response: Any) -> dict[str, Any]:
+            raw = response.choices[0].message.content or "{}"
+            return {"raw": raw}
+
+        payload, _from_cache = await execute_with_cache(
+            execution_context=execution_context,
+            cache_key=cache_key,
+            request_factory=lambda: client.chat.completions.create(
+                model=provider_settings.generator_model,
+                messages=messages,
+                response_format={"type": "json_object"},
+                temperature=0.8,
+            ),
+            parser=parser,
+        )
+        data = json.loads(payload["raw"])
     return _validate_branches([ScenarioBranch(**branch) for branch in data.get("branches", [])], n)
 
 
@@ -227,11 +264,17 @@ async def generate_branches(
     env_schema: Dict[str, Any],
     n_branches: int | None = None,
     use_llm: bool = True,
+    execution_context: ExecutionContext | None = None,
 ) -> List[ScenarioBranch]:
     """Generate scenario branches, using the LLM when available and allowed."""
-    if use_llm and config.API_KEY:
+    provider_settings = (
+        config.get_provider_settings(execution_context.provider_name)
+        if execution_context is not None
+        else config.get_provider_settings()
+    )
+    if use_llm and provider_settings.api_key:
         try:
-            return await generate_branches_llm(task, env_schema, n_branches)
+            return await generate_branches_llm(task, env_schema, n_branches, execution_context=execution_context)
         except Exception:
             pass
     return generate_branches_rules(task, env_schema, n_branches)

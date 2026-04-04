@@ -44,6 +44,7 @@ st.markdown(
 )
 
 st.caption(
+    f"Default provider: {config.provider_label(config.PROVIDER)} | "
     f"Configured budget: {config.MAX_REQUESTS_PER_MINUTE} rpm | "
     f"Request timeout: {getattr(config, 'LLM_REQUEST_TIMEOUT_SECONDS', 20.0):.0f}s"
 )
@@ -59,13 +60,18 @@ with st.expander("ðŸ”¬ Core Research: Why Multiverse Evals?"):
 
 st.markdown("---")
 
-task, env_state, n_branches, max_steps, use_llm, run_clicked = render_task_input(
-    config.MAX_REQUESTS_PER_MINUTE
+task, env_state, n_branches, max_steps, use_llm, run_clicked, selected_provider = render_task_input(
+    rpm_budget=config.MAX_REQUESTS_PER_MINUTE,
+    default_provider=config.PROVIDER,
 )
 
 if run_clicked:
-    if use_llm and not config.validate():
-        st.error("`NVIDIA_API_KEY` is not set. Enable Demo Mode or set the key in `.env`.")
+    selected_settings = config.get_provider_settings(selected_provider)
+    if use_llm and not config.validate(selected_provider):
+        st.error(
+            f"`{selected_settings.api_key_env_var}` is not set for {selected_settings.label}. "
+            "Enable Demo Mode or set the key in `.env`."
+        )
         st.stop()
 
     with st.status("Running Time-Travel Evaluation...", expanded=True) as status:
@@ -78,6 +84,7 @@ if run_clicked:
                 max_steps=max_steps,
                 use_llm=use_llm,
                 use_llm_agent=use_llm,
+                provider=selected_provider,
             )
         )
         status.update(label="Evaluation complete", state="complete", expanded=False)
