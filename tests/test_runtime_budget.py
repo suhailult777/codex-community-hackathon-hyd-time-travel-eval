@@ -25,6 +25,16 @@ def test_estimate_total_api_calls_demo_mode():
     ) == 0
 
 
+def test_estimate_total_api_calls_with_llm_judge():
+    assert estimate_total_api_calls(
+        n_branches=3,
+        max_steps=6,
+        use_llm=True,
+        use_llm_agent=True,
+        use_llm_judge=True,
+    ) == 22
+
+
 def test_estimate_runtime_uses_rpm_budget():
     estimate = estimate_runtime(
         n_branches=3,

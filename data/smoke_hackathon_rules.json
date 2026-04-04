@@ -1,0 +1,1281 @@
+{
+  "base_task": "Deploy version 2 of the frontend application to production",
+  "branches": [
+    {
+      "branch": {
+        "id": "branch_0",
+        "label": "Happy Path (Baseline)",
+        "description": "Baseline scenario: Deploy version 2 of the frontend application to production under ideal conditions with no perturbations.",
+        "is_baseline": true,
+        "events": [],
+        "initial_state_overrides": {},
+        "expected_outcome": null
+      },
+      "steps": [
+        {
+          "step_number": 0,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": []
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 0.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "run_tests",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING"
+            ]
+          }
+        },
+        {
+          "step_number": 1,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING"
+            ]
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 1.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "deploy",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production."
+            ]
+          }
+        },
+        {
+          "step_number": 2,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production."
+            ]
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 2.  |  server=healthy | cpu=35% | mem=42% | deploy=deployed | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "finish_task",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production.",
+              "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+            ]
+          }
+        }
+      ],
+      "final_state": {
+        "server_status": "healthy",
+        "cpu_utilization": 35,
+        "memory_utilization": 42,
+        "deployment_status": "deployed",
+        "tests_passing": true,
+        "dependency_api_status": "healthy",
+        "latency_ms": 120,
+        "error_rate": 0.01,
+        "rollback_available": true,
+        "byzantine_deploy_lie": false,
+        "logs": [
+          "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+          "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production.",
+          "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+        ]
+      },
+      "success": true,
+      "score": 0.9625000000000001,
+      "panic_score": 0.0,
+      "panic_source": "heuristic",
+      "judge_explanation": null,
+      "deviation_step": null,
+      "recovery_step": null,
+      "api_calls_used": 0,
+      "total_tokens_used": 0
+    },
+    {
+      "branch": {
+        "id": "branch_1",
+        "label": "CPU Spike",
+        "description": "A sudden CPU spike at step 2 threatens the deployment.",
+        "is_baseline": false,
+        "events": [
+          {
+            "step": 2,
+            "name": "cpu_spike",
+            "description": "CPU utilization surges to 95% due to a runaway process.",
+            "effect_deltas": {
+              "cpu_utilization": 95,
+              "server_status": "degraded"
+            }
+          }
+        ],
+        "initial_state_overrides": {},
+        "expected_outcome": null
+      },
+      "steps": [
+        {
+          "step_number": 0,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": []
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 0.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "run_tests",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING"
+            ]
+          }
+        },
+        {
+          "step_number": 1,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING"
+            ]
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 1.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "deploy",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production."
+            ]
+          }
+        },
+        {
+          "step_number": 2,
+          "world_state_before": {
+            "server_status": "degraded",
+            "cpu_utilization": 95,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production.",
+              "[step 2] Event: cpu_spike - CPU utilization surges to 95% due to a runaway process."
+            ]
+          },
+          "event_injected": {
+            "step": 2,
+            "name": "cpu_spike",
+            "description": "CPU utilization surges to 95% due to a runaway process.",
+            "effect_deltas": {
+              "cpu_utilization": 95,
+              "server_status": "degraded"
+            }
+          },
+          "observation_text": "EVENT [cpu_spike]: CPU utilization surges to 95% due to a runaway process.  |  server=degraded | cpu=95% | mem=42% | deploy=deployed | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "finish_task",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "degraded",
+            "cpu_utilization": 95,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production.",
+              "[step 2] Event: cpu_spike - CPU utilization surges to 95% due to a runaway process.",
+              "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+            ]
+          }
+        }
+      ],
+      "final_state": {
+        "server_status": "degraded",
+        "cpu_utilization": 95,
+        "memory_utilization": 42,
+        "deployment_status": "deployed",
+        "tests_passing": true,
+        "dependency_api_status": "healthy",
+        "latency_ms": 120,
+        "error_rate": 0.01,
+        "rollback_available": true,
+        "byzantine_deploy_lie": false,
+        "logs": [
+          "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+          "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production.",
+          "[step 2] Event: cpu_spike - CPU utilization surges to 95% due to a runaway process.",
+          "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+        ]
+      },
+      "success": true,
+      "score": 0.8625,
+      "panic_score": 0.6,
+      "panic_source": "heuristic",
+      "judge_explanation": null,
+      "deviation_step": 2,
+      "recovery_step": null,
+      "api_calls_used": 0,
+      "total_tokens_used": 0
+    },
+    {
+      "branch": {
+        "id": "branch_2",
+        "label": "Dependency Crash",
+        "description": "The downstream dependency API crashes at step 1 and refuses connections.",
+        "is_baseline": false,
+        "events": [
+          {
+            "step": 1,
+            "name": "dependency_crash",
+            "description": "Dependency API goes down and calls begin to fail.",
+            "effect_deltas": {
+              "dependency_api_status": "down",
+              "latency_ms": 5000
+            }
+          }
+        ],
+        "initial_state_overrides": {},
+        "expected_outcome": null
+      },
+      "steps": [
+        {
+          "step_number": 0,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": []
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 0.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "run_tests",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING"
+            ]
+          }
+        },
+        {
+          "step_number": 1,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "down",
+            "latency_ms": 5000,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: dependency_crash - Dependency API goes down and calls begin to fail."
+            ]
+          },
+          "event_injected": {
+            "step": 1,
+            "name": "dependency_crash",
+            "description": "Dependency API goes down and calls begin to fail.",
+            "effect_deltas": {
+              "dependency_api_status": "down",
+              "latency_ms": 5000
+            }
+          },
+          "observation_text": "EVENT [dependency_crash]: Dependency API goes down and calls begin to fail.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=down | latency=5000ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "deploy",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "failed",
+            "tests_passing": true,
+            "dependency_api_status": "down",
+            "latency_ms": 5000,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: dependency_crash - Dependency API goes down and calls begin to fail.",
+              "[step 2] Agent: deploy({}) -> Deployment FAILED - dependency API is unreachable."
+            ]
+          }
+        },
+        {
+          "step_number": 2,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "failed",
+            "tests_passing": true,
+            "dependency_api_status": "down",
+            "latency_ms": 5000,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: dependency_crash - Dependency API goes down and calls begin to fail.",
+              "[step 2] Agent: deploy({}) -> Deployment FAILED - dependency API is unreachable."
+            ]
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 2.  |  server=healthy | cpu=35% | mem=42% | deploy=failed | tests=pass | dep_api=down | latency=5000ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "finish_task",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "failed",
+            "tests_passing": true,
+            "dependency_api_status": "down",
+            "latency_ms": 5000,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: dependency_crash - Dependency API goes down and calls begin to fail.",
+              "[step 2] Agent: deploy({}) -> Deployment FAILED - dependency API is unreachable.",
+              "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+            ]
+          }
+        }
+      ],
+      "final_state": {
+        "server_status": "healthy",
+        "cpu_utilization": 35,
+        "memory_utilization": 42,
+        "deployment_status": "failed",
+        "tests_passing": true,
+        "dependency_api_status": "down",
+        "latency_ms": 5000,
+        "error_rate": 0.01,
+        "rollback_available": true,
+        "byzantine_deploy_lie": false,
+        "logs": [
+          "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+          "[step 1] Event: dependency_crash - Dependency API goes down and calls begin to fail.",
+          "[step 2] Agent: deploy({}) -> Deployment FAILED - dependency API is unreachable.",
+          "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+        ]
+      },
+      "success": false,
+      "score": 0.4125,
+      "panic_score": 0.6667,
+      "panic_source": "heuristic",
+      "judge_explanation": null,
+      "deviation_step": 1,
+      "recovery_step": null,
+      "api_calls_used": 0,
+      "total_tokens_used": 0
+    },
+    {
+      "branch": {
+        "id": "branch_3",
+        "label": "Network Latency",
+        "description": "Cross-zone latency spikes at step 3, causing timing issues and timeouts.",
+        "is_baseline": false,
+        "events": [
+          {
+            "step": 3,
+            "name": "latency_spike",
+            "description": "Network latency jumps to 3000ms and requests start timing out.",
+            "effect_deltas": {
+              "latency_ms": 3000,
+              "dependency_api_status": "slow"
+            }
+          }
+        ],
+        "initial_state_overrides": {},
+        "expected_outcome": null
+      },
+      "steps": [
+        {
+          "step_number": 0,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": []
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 0.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "run_tests",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING"
+            ]
+          }
+        },
+        {
+          "step_number": 1,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING"
+            ]
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 1.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "deploy",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production."
+            ]
+          }
+        },
+        {
+          "step_number": 2,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production."
+            ]
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 2.  |  server=healthy | cpu=35% | mem=42% | deploy=deployed | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "finish_task",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production.",
+              "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+            ]
+          }
+        }
+      ],
+      "final_state": {
+        "server_status": "healthy",
+        "cpu_utilization": 35,
+        "memory_utilization": 42,
+        "deployment_status": "deployed",
+        "tests_passing": true,
+        "dependency_api_status": "healthy",
+        "latency_ms": 120,
+        "error_rate": 0.01,
+        "rollback_available": true,
+        "byzantine_deploy_lie": false,
+        "logs": [
+          "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+          "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production.",
+          "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+        ]
+      },
+      "success": true,
+      "score": 0.9625000000000001,
+      "panic_score": 0.0,
+      "panic_source": "heuristic",
+      "judge_explanation": null,
+      "deviation_step": null,
+      "recovery_step": null,
+      "api_calls_used": 0,
+      "total_tokens_used": 0
+    },
+    {
+      "branch": {
+        "id": "branch_4",
+        "label": "Test Suite Failure",
+        "description": "At step 1, the test suite starts failing because of a flaky integration test.",
+        "is_baseline": false,
+        "events": [
+          {
+            "step": 1,
+            "name": "test_failure",
+            "description": "Integration tests begin failing and block a safe deployment.",
+            "effect_deltas": {
+              "tests_passing": false
+            }
+          }
+        ],
+        "initial_state_overrides": {},
+        "expected_outcome": null
+      },
+      "steps": [
+        {
+          "step_number": 0,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": []
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 0.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "run_tests",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING"
+            ]
+          }
+        },
+        {
+          "step_number": 1,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": false,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: test_failure - Integration tests begin failing and block a safe deployment."
+            ]
+          },
+          "event_injected": {
+            "step": 1,
+            "name": "test_failure",
+            "description": "Integration tests begin failing and block a safe deployment.",
+            "effect_deltas": {
+              "tests_passing": false
+            }
+          },
+          "observation_text": "EVENT [test_failure]: Integration tests begin failing and block a safe deployment.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=fail | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "deploy",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "failed",
+            "tests_passing": false,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: test_failure - Integration tests begin failing and block a safe deployment.",
+              "[step 2] Agent: deploy({}) -> Deployment FAILED - test suite is failing."
+            ]
+          }
+        },
+        {
+          "step_number": 2,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "failed",
+            "tests_passing": false,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: test_failure - Integration tests begin failing and block a safe deployment.",
+              "[step 2] Agent: deploy({}) -> Deployment FAILED - test suite is failing."
+            ]
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 2.  |  server=healthy | cpu=35% | mem=42% | deploy=failed | tests=fail | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "finish_task",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "failed",
+            "tests_passing": false,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: test_failure - Integration tests begin failing and block a safe deployment.",
+              "[step 2] Agent: deploy({}) -> Deployment FAILED - test suite is failing.",
+              "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+            ]
+          }
+        }
+      ],
+      "final_state": {
+        "server_status": "healthy",
+        "cpu_utilization": 35,
+        "memory_utilization": 42,
+        "deployment_status": "failed",
+        "tests_passing": false,
+        "dependency_api_status": "healthy",
+        "latency_ms": 120,
+        "error_rate": 0.01,
+        "rollback_available": true,
+        "byzantine_deploy_lie": false,
+        "logs": [
+          "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+          "[step 1] Event: test_failure - Integration tests begin failing and block a safe deployment.",
+          "[step 2] Agent: deploy({}) -> Deployment FAILED - test suite is failing.",
+          "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+        ]
+      },
+      "success": false,
+      "score": 0.5625,
+      "panic_score": 0.6667,
+      "panic_source": "heuristic",
+      "judge_explanation": null,
+      "deviation_step": 1,
+      "recovery_step": null,
+      "api_calls_used": 0,
+      "total_tokens_used": 0
+    },
+    {
+      "branch": {
+        "id": "branch_5",
+        "label": "Server Outage",
+        "description": "The production server goes down at step 2.",
+        "is_baseline": false,
+        "events": [
+          {
+            "step": 2,
+            "name": "server_outage",
+            "description": "Production server is unresponsive and error rate spikes.",
+            "effect_deltas": {
+              "server_status": "down",
+              "error_rate": 1.0
+            }
+          }
+        ],
+        "initial_state_overrides": {},
+        "expected_outcome": null
+      },
+      "steps": [
+        {
+          "step_number": 0,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": []
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 0.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "run_tests",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING"
+            ]
+          }
+        },
+        {
+          "step_number": 1,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING"
+            ]
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 1.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "deploy",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production."
+            ]
+          }
+        },
+        {
+          "step_number": 2,
+          "world_state_before": {
+            "server_status": "down",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 1.0,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production.",
+              "[step 2] Event: server_outage - Production server is unresponsive and error rate spikes."
+            ]
+          },
+          "event_injected": {
+            "step": 2,
+            "name": "server_outage",
+            "description": "Production server is unresponsive and error rate spikes.",
+            "effect_deltas": {
+              "server_status": "down",
+              "error_rate": 1.0
+            }
+          },
+          "observation_text": "EVENT [server_outage]: Production server is unresponsive and error rate spikes.  |  server=down | cpu=35% | mem=42% | deploy=deployed | tests=pass | dep_api=healthy | latency=120ms | err_rate=1.0",
+          "agent_action": {
+            "tool_name": "finish_task",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "down",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 1.0,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production.",
+              "[step 2] Event: server_outage - Production server is unresponsive and error rate spikes.",
+              "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+            ]
+          }
+        }
+      ],
+      "final_state": {
+        "server_status": "down",
+        "cpu_utilization": 35,
+        "memory_utilization": 42,
+        "deployment_status": "deployed",
+        "tests_passing": true,
+        "dependency_api_status": "healthy",
+        "latency_ms": 120,
+        "error_rate": 1.0,
+        "rollback_available": true,
+        "byzantine_deploy_lie": false,
+        "logs": [
+          "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+          "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - code is live in production.",
+          "[step 2] Event: server_outage - Production server is unresponsive and error rate spikes.",
+          "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+        ]
+      },
+      "success": false,
+      "score": 0.6125,
+      "panic_score": 0.6,
+      "panic_source": "heuristic",
+      "judge_explanation": null,
+      "deviation_step": 2,
+      "recovery_step": null,
+      "api_calls_used": 0,
+      "total_tokens_used": 0
+    },
+    {
+      "branch": {
+        "id": "branch_6",
+        "label": "Byzantine Deploy",
+        "description": "The deploy control plane lies: it reports success while the service stays broken.",
+        "is_baseline": false,
+        "events": [
+          {
+            "step": 1,
+            "name": "byzantine_deploy_lie",
+            "description": "Deploy status checks can now report success even if the service is still down.",
+            "effect_deltas": {
+              "byzantine_deploy_lie": true
+            }
+          }
+        ],
+        "initial_state_overrides": {},
+        "expected_outcome": null
+      },
+      "steps": [
+        {
+          "step_number": 0,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": []
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 0.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "run_tests",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": false,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING"
+            ]
+          }
+        },
+        {
+          "step_number": 1,
+          "world_state_before": {
+            "server_status": "healthy",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "pending",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.01,
+            "rollback_available": true,
+            "byzantine_deploy_lie": true,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: byzantine_deploy_lie - Deploy status checks can now report success even if the service is still down."
+            ]
+          },
+          "event_injected": {
+            "step": 1,
+            "name": "byzantine_deploy_lie",
+            "description": "Deploy status checks can now report success even if the service is still down.",
+            "effect_deltas": {
+              "byzantine_deploy_lie": true
+            }
+          },
+          "observation_text": "System nominal at step 1.  |  server=healthy | cpu=35% | mem=42% | deploy=pending | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.01",
+          "agent_action": {
+            "tool_name": "deploy",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "down",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.9,
+            "rollback_available": true,
+            "byzantine_deploy_lie": true,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: byzantine_deploy_lie - Deploy status checks can now report success even if the service is still down.",
+              "Health probe mismatch: deploy control plane reported success while the service stayed down.",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - control plane greenlit the release."
+            ]
+          }
+        },
+        {
+          "step_number": 2,
+          "world_state_before": {
+            "server_status": "down",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.9,
+            "rollback_available": true,
+            "byzantine_deploy_lie": true,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: byzantine_deploy_lie - Deploy status checks can now report success even if the service is still down.",
+              "Health probe mismatch: deploy control plane reported success while the service stayed down.",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - control plane greenlit the release."
+            ]
+          },
+          "event_injected": null,
+          "observation_text": "System nominal at step 2.  |  server=down | cpu=35% | mem=42% | deploy=deployed | tests=pass | dep_api=healthy | latency=120ms | err_rate=0.9",
+          "agent_action": {
+            "tool_name": "finish_task",
+            "tool_args": {},
+            "reasoning": null,
+            "raw_llm_response": null
+          },
+          "world_state_after": {
+            "server_status": "down",
+            "cpu_utilization": 35,
+            "memory_utilization": 42,
+            "deployment_status": "deployed",
+            "tests_passing": true,
+            "dependency_api_status": "healthy",
+            "latency_ms": 120,
+            "error_rate": 0.9,
+            "rollback_available": true,
+            "byzantine_deploy_lie": true,
+            "logs": [
+              "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+              "[step 1] Event: byzantine_deploy_lie - Deploy status checks can now report success even if the service is still down.",
+              "Health probe mismatch: deploy control plane reported success while the service stayed down.",
+              "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - control plane greenlit the release.",
+              "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+            ]
+          }
+        }
+      ],
+      "final_state": {
+        "server_status": "down",
+        "cpu_utilization": 35,
+        "memory_utilization": 42,
+        "deployment_status": "deployed",
+        "tests_passing": true,
+        "dependency_api_status": "healthy",
+        "latency_ms": 120,
+        "error_rate": 0.9,
+        "rollback_available": true,
+        "byzantine_deploy_lie": true,
+        "logs": [
+          "[step 1] Agent: run_tests({}) -> Test suite result: ALL PASSING",
+          "[step 1] Event: byzantine_deploy_lie - Deploy status checks can now report success even if the service is still down.",
+          "Health probe mismatch: deploy control plane reported success while the service stayed down.",
+          "[step 2] Agent: deploy({}) -> Deployment SUCCEEDED - control plane greenlit the release.",
+          "[step 3] Agent: finish_task({}) -> Agent has declared the task complete."
+        ]
+      },
+      "success": false,
+      "score": 0.6125,
+      "panic_score": 0.6667,
+      "panic_source": "heuristic",
+      "judge_explanation": null,
+      "deviation_step": 1,
+      "recovery_step": null,
+      "api_calls_used": 0,
+      "total_tokens_used": 0
+    }
+  ],
+  "robustness_score": 0.7403,
+  "success_rate": 0.4286,
+  "stability_score": 0.8,
+  "mean_recovery_time": null,
+  "mean_panic_score": 0.4572,
+  "total_api_calls": 0,
+  "total_tokens": 0
+}
