@@ -10,11 +10,16 @@ Instead of asking "Did the agent pass one run?", TTE asks:
 
 TTE runs one task over a baseline timeline and multiple perturbed branches (for example, dependency crash, CPU spike, latency anomaly), then computes robustness-oriented metrics and visualizes the full trace in Streamlit.
 
+## Demo Video
+
+- [Time Travel Evals Demo (MP4)](media/time-travel-evals-demo.mp4)
+
 ## Table of Contents
 
 - [Problem](#problem)
 - [Solution](#solution)
 - [Core Capabilities](#core-capabilities)
+- [Demo Video](#demo-video)
 - [Architecture](#architecture)
 - [Repository Layout](#repository-layout)
 - [Prerequisites](#prerequisites)
